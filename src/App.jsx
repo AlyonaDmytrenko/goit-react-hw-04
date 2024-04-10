@@ -1,51 +1,62 @@
-// import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
-import SearchBar from "./components/SearchBar/SearchBar";
-
+import { useState } from "react";
+import ImageGallery from "./components/ImageGallery/ImageGallery";
+import { useEffect } from "react";
 import Loader from "./components/Loader/Loader";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
-// import ImageModal from "./components/ImageModal/ImageModal";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import ImageGallery from "./components/ImageGallery/ImageGallery";
+// import { requestPhoto } from "./services/api";
+import SearchBar from "./components/SearchBar/SearchBar";
+import { requestPhoto, requestPhotoByQuery } from "./services/api";
 
-function App() {
-  const [images, setImages] = useState("null");
+const App = () => {
+  const [photos, setPhotos] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [query, setQuery] = useState("");
 
-  const requestImage = async () => {
-    const { data } = await axios.get;
-    "https://unsplash.com/documentation#search-photos"();
-    return data;
-  };
-
   useEffect(() => {
-    async function fetchImages() {
+    async function fetchPhotos() {
       try {
         setIsLoading(true);
-        const data = await requestImage();
-        setImages(data.images);
+        const data = await requestPhoto();
+        setPhotos(data);
+        console.log(data);
+      } catch {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchPhotos();
+  }, []);
+
+  useEffect(() => {
+    if (query.length === 0) return;
+    async function fetchPhotosByQuery() {
+      try {
+        setIsLoading(true);
+        const data = await requestPhotoByQuery(query);
+        setPhotos(data.photos);
       } catch (error) {
         setIsError(true);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchImages();
-  }, []);
+    fetchPhotosByQuery();
+  }, [query]);
 
   const onSetSearchQuery = (searchTerm) => {
     setQuery(searchTerm);
   };
+
   return (
     <>
+      <SearchBar onSetSearchQuery={onSetSearchQuery} />
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
-      {images && <ImageGallery images={images} />}
-      <SearchBar onSetSearchQuery={onSetSearchQuery} />
+      {photos && <ImageGallery photos={photos} />}
     </>
   );
-}
+};
 
 export default App;

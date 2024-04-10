@@ -1,20 +1,17 @@
-import { BallTriangle } from "react-loader-spinner";
+import { Hourglass } from "react-loader-spinner";
 
 const Loader = () => {
   return (
     <div>
-      render( render(
-      <BallTriangle
-        height={100}
-        width={100}
-        radius={5}
-        color="#4fa94d"
-        ariaLabel="ball-triangle-loading"
+      <Hourglass
+        visible={true}
+        height="30"
+        width="30"
+        ariaLabel="hourglass-loading"
         wrapperStyle={{}}
         wrapperClass=""
-        visible={true}
+        colors={["#306cce", "#72a1ed"]}
       />
-      ) )
     </div>
   );
 };

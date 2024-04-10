@@ -1,15 +1,18 @@
-import ImageCard from "./components/ImageGallery/ImageGallery";
+import ImageCard from "../ImageCard/ImageCard/";
 
-const ImageGallery = ({ images }) => {
+const ImageGallery = ({ photos }) => {
   return (
-    <div>
-      <ul>
-        {images &&
-          images.map((image) => {
-            return <ImageCard key={image.id} photo={image} />;
-          })}
-      </ul>
-    </div>
+    <ul>
+      {Array.isArray(photos) &&
+        photos.map((photo) => {
+          return (
+            <li key={photo.id}>
+              <ImageCard photo={photo} />
+              <h2>Description:{photo.description}</h2>
+            </li>
+          );
+        })}
+    </ul>
   );
 };
 

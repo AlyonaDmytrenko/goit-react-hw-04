@@ -14,25 +14,27 @@ const SearchBar = ({ onSetSearchQuery }) => {
   };
 
   return (
-    <Formik
-      initialValues={FORM_INITIAL_VALUES}
-      validationSchema={searchBarSchema}
-      onSubmit={handleSubmit}
-    >
-      <Form>
-        <label>
-          <Field
-            type="text"
-            name="searchTerm"
-            placeholder="Enter search query..."
-          />
-          <ErrorMessage component="p" name="searchTerm" />
-        </label>
-        <button type="submit" aria-label="Search">
-          🧷
-        </button>
-      </Form>
-    </Formik>
+    <header>
+      <Formik
+        initialValues={FORM_INITIAL_VALUES}
+        validationSchema={searchBarSchema}
+        onSubmit={handleSubmit}
+      >
+        <Form>
+          <label>
+            <Field
+              type="text"
+              name="searchTerm"
+              placeholder="Enter search query..."
+            />
+            <ErrorMessage component="p" name="searchTerm" />
+          </label>
+          <button type="submit" aria-label="Search">
+            🧷
+          </button>
+        </Form>
+      </Formik>
+    </header>
   );
 };
 

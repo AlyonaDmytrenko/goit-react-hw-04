@@ -1,52 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
-import { useEffect } from "react";
 import Loader from "./components/Loader/Loader";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
-// import { requestPhoto } from "./services/api";
 import SearchBar from "./components/SearchBar/SearchBar";
-import { requestPhoto, requestPhotoByQuery } from "./services/api";
+import { requestPhotoByQuery } from "./services/api";
+import ImageModal from "./components/ImageModal/ImageModal";
+import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
 
 const App = () => {
   const [photos, setPhotos] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [query, setQuery] = useState("");
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    async function fetchPhotos() {
-      try {
-        setIsLoading(true);
-        const data = await requestPhoto();
-        setPhotos(data);
-        console.log(data);
-      } catch {
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchPhotos();
-  }, []);
+    const fetchPhotosByQuery = async () => {
+      if (!query) return;
 
-  useEffect(() => {
-    if (query.length === 0) return;
-    async function fetchPhotosByQuery() {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const data = await requestPhotoByQuery(query);
-        setPhotos(data.photos);
+        const data = await requestPhotoByQuery(query, page);
+        setPhotos((prevPhotos) => {
+          if (page === 1) return data.results;
+          return [...prevPhotos, ...data.results];
+        });
+        setIsError(false);
       } catch (error) {
         setIsError(true);
       } finally {
         setIsLoading(false);
       }
-    }
+    };
+
     fetchPhotosByQuery();
-  }, [query]);
+  }, [query, page]);
 
   const onSetSearchQuery = (searchTerm) => {
     setQuery(searchTerm);
+    setPage(1); // Reset page when new search query is set
+  };
+
+  const openModal = (photo) => {
+    setSelectedPhoto(photo);
+  };
+
+  const closeModal = () => {
+    setSelectedPhoto(null);
+  };
+
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
   };
 
   return (
@@ -54,7 +59,15 @@ const App = () => {
       <SearchBar onSetSearchQuery={onSetSearchQuery} />
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
-      {photos && <ImageGallery photos={photos} />}
+      {photos && <ImageGallery photos={photos} openModal={openModal} />}
+      {photos && (
+        <LoadMoreBtn onLoadMore={handleLoadMore} hasMore={photos.length > 0} />
+      )}
+      <ImageModal
+        isOpen={!!selectedPhoto}
+        photo={selectedPhoto}
+        onRequestClose={closeModal}
+      />
     </>
   );
 };

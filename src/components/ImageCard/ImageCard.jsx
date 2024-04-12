@@ -1,7 +1,13 @@
+import css from "./ImageCard.module.css";
 const imageCard = ({ photo }) => {
   return (
     <div>
-      <img width={250} src={photo.urls.thumb} alt={photo.description} />
+      <img
+        className={css.image}
+        width={250}
+        src={photo.urls.small}
+        alt={photo.description}
+      />
     </div>
   );
 };
